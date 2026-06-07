@@ -1,0 +1,10 @@
+go 1.25.5
+
+use (
+	./gateway
+	./kitchen-srv
+	./orders-srv
+	./payments-srv
+	./shared
+	./stock-srv
+)
