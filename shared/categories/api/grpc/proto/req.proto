@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package categoriesPB;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/amorindev/go-microservices-app/shared/categories/api/grpc/gen;categoriesPB";
+
+message CreateCategoryReq {
+  string name = 1;
+}
+
+message Category {
+  string id = 1;
+  string name = 2;
+}
+
+message GetAllResp {
+  repeated Category products = 1;
+}
+
+service CategoryService {
+  rpc Create(CreateCategoryReq) returns (Category){}
+  rpc GetAll(google.protobuf.Empty) returns (GetAllResp){}
+}

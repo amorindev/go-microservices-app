@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package ordersPB;
+
+option go_package = "github.com/amorindev/go-microservices-app/shared/orders/api/grpc/gen;ordersPB";
+
+message ItemsWithQuantity {
+  string product_id = 1;
+  int32 quantity = 2;
+  double price = 3;
+}
+
+message CreateOrderReq {
+  string user_id = 1;
+  double total = 2;
+  repeated ItemsWithQuantity items = 3;
+}

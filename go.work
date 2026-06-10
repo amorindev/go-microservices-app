@@ -1,10 +1,10 @@
 go 1.25.5
 
 use (
+	./catalog-srv
 	./gateway
-	./kitchen-srv
+	./inventory-srv
 	./orders-srv
 	./payments-srv
 	./shared
-	./stock-srv
 )

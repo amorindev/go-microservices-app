@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package ordersPB;
+
+import "request.proto";
+
+option go_package = "github.com/amorindev/go-microservices-app/shared/orders/api/grpc/gen;ordersPB";
+
+message Order {
+  string id = 1;
+  string user_id = 2;
+  string status = 3;
+  double total = 4;
+  repeated Item items = 5;
+}
+
+message Item {
+  string id = 1;
+  string product_id = 2;
+  int32 quantity = 3;
+  double price = 4;
+}
+
+service OrderService {
+  rpc Create(CreateOrderReq) returns (Order){}
+}
+
+
+

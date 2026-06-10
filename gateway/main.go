@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	ordersPB "github.com/amorindev/go-microservices-app/shared/api/proto/gen"
+	"github.com/amorindev/go-microservices-app/gateway/handler"
+	categoriesPB "github.com/amorindev/go-microservices-app/shared/categories/api/grpc/gen"
+	ordersPB "github.com/amorindev/go-microservices-app/shared/orders/api/grpc/gen"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -14,19 +16,33 @@ import (
 
 var (
 	orderServiceAddr = "localhost:3000"
+	catalogServiceAddr = "localhost:3200"
 )
 
 func main() {
 
-	conn, err := grpc.NewClient(orderServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// Order service
+	orderConn, err := grpc.NewClient(orderServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to dial server: %v", err)
 	}
-	defer conn.Close()
+	defer orderConn.Close()
 
-	log.Println("Dialing orders service at", orderServiceAddr)
+	log.Println("GATEWAY - Dialing orders service at", orderServiceAddr)
 
-	c := ordersPB.NewOrderServiceClient(conn)
+	orderC := ordersPB.NewOrderServiceClient(orderConn)
+
+
+	// Category service
+	categoryConn, err := grpc.NewClient(catalogServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to dial server: %v", err)
+	}
+	defer categoryConn.Close()
+
+	log.Println("GATEWAY - Dialing catalog service at", catalogServiceAddr)
+
+	catalogC := categoriesPB.NewCategoryServiceClient(categoryConn)
 
 	err = godotenv.Load("./gateway/.env")
 	if err != nil {
@@ -38,10 +54,10 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	handler := NewHandler(c)
-	handler.registerRoutes(mux)
+	handler := handler.NewHandler(orderC,catalogC)
+	handler.RegisterRoutes(mux)
 
-	log.Printf("Starting HTTP server at %s", hsp)
+	log.Printf("GATEWAY - Starting HTTP server at %s", hsp)
 
 	if err := http.ListenAndServe(hsp, mux); err != nil {
 		log.Fatal("Failed to start http server")

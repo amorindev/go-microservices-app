@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package inventoryPB;
+
+option go_package = "github.com/amorindev/go-microservices-app/shared/inventory/api/grpc/gen;inventoryPB";
+
+message CreateInventoryReq {
+    string product_id = 1;
+    int32 stock = 2;
+}
+
+
+message Inventory {
+  string id = 1;
+  string product_id = 2;
+  int32 stock = 3;
+  int32 reserved_stock = 4;
+}
+
+service InventoryService {
+  rpc Create(CreateInventoryReq) returns (Inventory){}
+}
